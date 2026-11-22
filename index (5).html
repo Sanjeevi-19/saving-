@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1730">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Savings">
+<title>Smart Savings</title>
+<style>
+:root{color-scheme:dark;--navy:#0b1730;--card:#13233f;--line:#223559;--gold:#d4a73a;--silver:#b9c2d0;--text:#eef1f7;--mute:#8d9bb5;--bad:#e5787a;--ok:#7bd3a0}
+*{box-sizing:border-box}html,body{margin:0;background:var(--navy);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+h2{font-family:Georgia,"Times New Roman",serif;margin:.3em 0}
+button,input,select{font:inherit;color:var(--text);background:#0e1c38;border:1px solid var(--line);border-radius:8px;padding:11px 12px;min-width:0;width:100%}
+button{cursor:pointer;background:var(--gold);color:#1a1405;border:0;font-weight:600;width:auto}button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:900px;margin:auto;padding:14px}.hide{display:none!important}.mute{color:var(--mute)}
+.big{font:700 clamp(2.2rem,10vw,3.6rem)/1.1 Georgia,serif;color:var(--gold);margin:.1em 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:12px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px}.card b{display:block;font-size:1.2rem}
+.bar{height:8px;background:#0e1c38;border-radius:9px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--gold);transition:width .6s}
+form.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:.88rem;white-space:nowrap}
+.msg{min-height:1.4em;color:var(--ok)}.banner{background:#2a2410;border:1px solid var(--gold);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0a1226;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;color:var(--mute);border-radius:0;padding:15px 2px}nav button.on{color:var(--gold)}
+#log{height:46vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.m{max-width:88%;padding:10px 12px;border-radius:12px;white-space:pre-wrap}.m small{display:block;color:var(--mute);font-size:.72rem}
+.m.u{align-self:flex-end;background:#1d3566}.m.a{align-self:flex-start;background:var(--card);border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{background:transparent;border:1px solid var(--line);color:var(--silver);font-weight:400;padding:6px 10px}
+@media(min-width:800px){:root{padding-left:190px;padding-bottom:0}nav{top:0;bottom:auto;right:auto;width:190px;flex-direction:column;border:0;border-right:1px solid var(--line);padding-top:24px}nav button{text-align:left;padding:14px 22px}}
+.k0{border-left:3px solid var(--gold)}.k1{border-left:3px solid var(--silver)}.k2{border-left:3px solid var(--ok)}.card{border-radius:14px}
+input,select,button{min-height:44px}nav button{font-size:.8rem}
+#alloc{margin:10px 0}.seg{display:flex;height:10px;border-radius:9px;overflow:hidden;background:#0e1c38}.seg i{display:block;height:100%}
+.lg{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-size:.82rem;color:var(--mute)}.lg b{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.list{display:grid;gap:8px;margin-top:10px}.it{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.it .ic{font-size:1.4rem}.it .tx{flex:1;min-width:0}.it .tx div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .am{font-weight:600;white-space:nowrap}.pos{color:var(--ok)}.neg{color:var(--bad)}.it button{padding:4px 10px;min-height:36px}
+#fab{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;font-size:1.8rem;padding:0;box-shadow:0 6px 18px rgba(0,0,0,.45);z-index:5}
+@media(min-width:800px){#fab{bottom:24px}nav button{font-size:1rem}}
+</style></head><body>
+<nav><button data-v="home" class="on">🏠 Home</button><button data-v="add">➕ Add</button><button data-v="hist">📒 History</button><button data-v="chat">🎙️ Assistant</button></nav>
+<main class="wrap">
+<section id="home" class="v">
+ <button id="fab" aria-label="Add a saving">+</button><div id="nudge" class="banner hide">Good morning! Have you saved something today?</div>
+ <div class="mute">Total savings</div><p class="big" id="total">₹0</p>
+ <div class="bar"><i id="pb" style="width:0"></i></div><div class="mute" id="pt"></div>
+ <div id="alloc"></div><form id="gf" style="display:flex;gap:8px;margin-top:10px"><input id="goal" type="number" min="0" placeholder="Set your goal in ₹"><button>Save goal</button></form>
+ <div class="grid" id="cards"></div>
+ <div class="card" style="margin-bottom:12px"><b>Last 30 days</b><div class="mute">Total savings trend</div><div id="trend"></div></div>
+ <div class="card" style="margin-bottom:12px"><b>Monthly net savings</b><div class="mute">Last 6 months</div><div id="mbars"></div></div>
+ <button class="ghost" id="exp">Download CSV</button> <button class="ghost" id="inst">Install on phone</button>
+ <p class="mute" id="ihelp" class="hide"></p>
+</section>
+<section id="add" class="v hide"><h2>Add a saving</h2>
+ <div class="card" style="margin-bottom:12px"><b>Chat to add</b><div class="mute">Say it naturally, for example “saved ₹500 today” or “bought 2 g gold at 7200”.</div><div id="alog" style="display:flex;flex-direction:column;gap:8px;max-height:34vh;overflow-y:auto;margin:8px 0"></div><form id="af" style="display:flex;gap:8px"><input id="ain" placeholder="Tell me what to add" required><button>Send</button><button type="button" class="ghost" id="amic" aria-label="Speak your entry">🎤</button></form></div>
+ <form id="tf" class="row">
+  <select id="asset"><option value="money">Money (₹)</option><option value="gold">Gold (g)</option><option value="silver">Silver (g)</option></select>
+  <select id="kind"><option value="deposit">Deposit</option><option value="withdraw">Withdraw</option><option value="income">Income</option><option value="expense">Expense</option></select>
+  <input id="amount" type="number" step="any" min="0" placeholder="Amount" required><button type="button" class="ghost" id="allbtn">Use full balance</button>
+  <input id="rate" type="number" step="any" min="0" placeholder="Rate per gram ₹" class="hide">
+  <input id="cat" placeholder="Category (coin, jewellery, food…)"><input id="method" placeholder="Payment method (UPI, cash…)">
+  <input id="date" type="date"><input id="note" placeholder="Note"><button>Save entry</button></form>
+ <div id="terr" class="msg"></div></section>
+<section id="hist" class="v hide"><h2>History</h2>
+ <select id="hf" style="max-width:200px"><option value="">All</option><option>gold</option><option>silver</option><option>money</option></select>
+ <div id="rows" class="list"></div></section>
+<section id="chat" class="v hide"><h2>Savings assistant</h2>
+ <div class="mute">Answers come from your saved records on this device. It never changes them.</div>
+ <div class="chips" id="chips"></div><div id="log"></div>
+ <form id="cf" style="display:flex;gap:8px"><input id="msg" placeholder="Ask about your savings" required><button>Send</button><button type="button" class="ghost" id="mic" aria-label="Speak a question">🎤</button><button type="button" class="ghost" id="spk" aria-pressed="true" aria-label="Read answers aloud">🔊</button><button type="button" class="ghost" id="clr">Clear</button><select id="lang" aria-label="Language" style="width:auto"><option value="en">English</option><option value="ta">தமிழ்</option></select></form><div id="vst" class="mute" role="status" style="min-height:1.4em;margin-top:6px"></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),inr=n=>"₹"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:2});
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+let TX=load("tx",[]),GOAL=load("goal",0),H=load("chat",[]);
+const today=()=>new Date().toISOString().slice(0,10);
+function sum(){const q={gold:0,silver:0,money:0},r={gold:0,silver:0},p={today:0,month:0,year:0},t=today();
+ [...TX].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id).forEach(x=>{const s=["deposit","income"].includes(x.kind)?1:-1;q[x.asset]+=s*x.amount;
+  if(x.asset!=="money")r[x.asset]=x.rate;const v=s*x.amount*(x.asset==="money"?1:x.rate);
+  if(x.date===t)p.today+=v;if(x.date.slice(0,7)===t.slice(0,7))p.month+=v;if(x.date.slice(0,4)===t.slice(0,4))p.year+=v});
+ const gv=q.gold*r.gold,sv=q.silver*r.silver,total=q.money+gv+sv;
+ return{gold:q.gold,silver:q.silver,cash:q.money,gv,sv,total,...p,progress:GOAL?Math.min(100,total/GOAL*100):0}}
+function dash(){const s=sum();$("#total").textContent=inr(s.total);$("#pb").style.width=s.progress+"%";
+ $("#pt").textContent=GOAL?`${s.progress.toFixed(1)}% of ${inr(GOAL)} goal`:"No goal set yet";
+ $("#nudge").classList.toggle("hide",TX.some(x=>x.date===today()));
+ $("#trend").innerHTML=trendSvg()||'<p class="mute">Add entries to see your trend.</p>';$("#mbars").innerHTML=monthBars();
+ const al=[["Cash",Math.max(0,s.cash),"var(--ok)"],["Gold",Math.max(0,s.gv),"var(--gold)"],["Silver",Math.max(0,s.sv),"var(--silver)"]],at=al.reduce((a,x)=>a+x[1],0);
+ $("#alloc").innerHTML=at?`<div class="seg" role="img" aria-label="Savings split">${al.map(x=>`<i style="width:${x[1]/at*100}%;background:${x[2]}"></i>`).join("")}</div><div class="lg">${al.map(x=>`<span><b style="background:${x[2]}"></b>${x[0]} ${Math.round(x[1]/at*100)}%</span>`).join("")}</div>`:"";
+ const c=[["Gold",+s.gold.toFixed(3)+" g",inr(s.gv)],["Silver",+s.silver.toFixed(3)+" g",inr(s.sv)],["Cash",inr(s.cash),"balance"],["Today",inr(s.today),"net saved"],["This month",inr(s.month),"net saved"],["This year",inr(s.year),"net saved"]];
+ $("#cards").innerHTML=c.map((x,i)=>`<div class="card k${i}"><span class="mute">${x[0]}</span><b>${x[1]}</b><span class="mute">${x[2]}</span></div>`).join("")}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+ document.querySelectorAll(".v").forEach(v=>v.classList.toggle("hide",v.id!==b.dataset.v));({home:dash,add:()=>$("#amount").focus(),hist:hist,chat:chatInit}[b.dataset.v]||(()=>{}))()});
+$("#fab").onclick=()=>document.querySelector('nav [data-v="add"]').click();
+$("#gf").onsubmit=e=>{e.preventDefault();GOAL=Math.max(0,+$("#goal").value||0);save("goal",GOAL);dash()};
+$("#asset").onchange=()=>{const m=$("#asset").value!=="money";$("#rate").classList.toggle("hide",!m);$("#rate").required=m;
+ [...$("#kind").options].forEach(o=>o.hidden=m&&!["deposit","withdraw"].includes(o.value));if(m&&!["deposit","withdraw"].includes($("#kind").value))$("#kind").value="deposit"};
+$("#allbtn").onclick=()=>{const as=$("#asset").value,k=$("#kind").value,m=$("#terr"),s=sum(),bal=as==="money"?s.cash:s[as];m.style.color="var(--bad)";
+ if(!["withdraw","expense"].includes(k)){m.textContent="Choose Withdraw or Expense first to use your full balance.";return}
+ if(!(bal>0)){m.textContent="There is no balance available to take out.";return}
+ $("#amount").value=as==="money"?+bal.toFixed(2):+bal.toFixed(3);
+ if(as!=="money"&&!$("#rate").value)$("#rate").value=+(s[as==="gold"?"gv":"sv"]/bal).toFixed(2);
+ m.style.color="var(--ok)";m.textContent="Amount set to your full "+(as==="money"?"cash":as)+" balance. Tap Save entry to confirm."};
+$("#tf").onsubmit=e=>{e.preventDefault();const a=+$("#amount").value,r=+$("#rate").value||0,as=$("#asset").value;
+ if(!(a>0)||(as!=="money"&&!(r>0))){$("#terr").style.color="var(--bad)";$("#terr").textContent="Enter a positive amount (and a rate per gram for gold or silver).";return}
+ TX.push({id:Date.now(),asset:as,kind:$("#kind").value,amount:a,rate:r,category:$("#cat").value,method:$("#method").value,note:$("#note").value,date:$("#date").value||today()});save("tx",TX);
+ e.target.reset();$("#date").value=today();$("#asset").onchange();$("#terr").style.color="var(--ok)";$("#terr").textContent="Saved."};
+function hist(){const f=$("#hf").value,r=TX.filter(x=>!f||x.asset===f).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+ $("#rows").innerHTML=r.length?r.map(t=>{const pos=["deposit","income"].includes(t.kind),v=t.asset==="money"?inr(t.amount):t.amount+" g";return`<div class="it"><span class="ic">${{gold:"🪙",silver:"🥈",money:"💵"}[t.asset]}</span><div class="tx"><div>${esc(t.note||t.category||t.kind)}</div><small class="mute">${t.date} · ${t.kind}${t.method?" · "+esc(t.method):""}${t.rate?" · "+inr(t.rate)+"/g":""}</small></div><span class="am ${pos?"pos":"neg"}">${pos?"+":"−"}${v}</span><button class="ghost" data-d="${t.id}" aria-label="Delete entry">✕</button></div>`}).join(""):`<p class="mute">No entries yet. Tap + on the dashboard to record your first saving.</p>`}
+$("#hf").onchange=hist;$("#rows").onclick=e=>{const id=+e.target.dataset.d;if(id&&confirm("Delete this entry?")){TX=TX.filter(x=>x.id!==id);save("tx",TX);hist()}};
+$("#exp").onclick=()=>{const q=v=>`"${String(v??"").replace(/"/g,'""')}"`,g=v=>/^[=+\-@]/.test(String(v))?"'"+v:v;
+ const rows=[["date","asset","type","amount","rate","category","method","note"],...TX.map(t=>[t.date,t.asset,t.kind,t.amount,t.rate,t.category,t.method,t.note])];
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(v=>q(g(v))).join(",")).join("\n")],{type:"text/csv"}));a.download="savings.csv";a.click()};
+// Assistant: rule-based, reads only local records
+function answerEn(q){q=q.toLowerCase();const s=sum(),t=today();
+ if(/delete|add|remove|edit|change/.test(q)&&!/how much/.test(q))return"I can’t change records. Use the Add tab to record entries and History to delete them.";
+ const m=q.match(/([\d.,]+)\s*(lakh|crore|k)?/);
+ if(/(save|saving).*(daily|per day|each day)|reach/.test(q)&&m){let n=parseFloat(m[1].replace(/,/g,""));if(!n)return"Tell me a target amount, for example ₹1 lakh in 90 days.";
+  n*={lakh:1e5,crore:1e7,k:1e3}[m[2]]||1;const d=+(q.match(/(\d+)\s*day/)||[0,0])[1]||(q.match(/(\d+)\s*month/)?+q.match(/(\d+)\s*month/)[1]*30:365);
+  const left=Math.max(0,n-s.total);return`Target ${inr(n)}, current total ${inr(s.total)}. Remaining ${inr(left)}. Over ${d} days you would need to save about ${inr(left/d)} a day.`}
+ if(/gold/.test(q))return`You own ${+s.gold.toFixed(3)} g of gold, worth about ${inr(s.gv)} at your latest rate.`;
+ if(/silver/.test(q))return`You own ${+s.silver.toFixed(3)} g of silver, worth about ${inr(s.sv)} at your latest rate.`;
+ if(/expense|spent|spend/.test(q)){const mon=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].findIndex(x=>q.includes(x));
+  const e=TX.filter(x=>x.kind==="expense"&&(mon<0||+x.date.slice(5,7)===mon+1));const tot=e.reduce((a,x)=>a+x.amount,0);
+  return e.length?`${e.length} expense entries${mon>=0?" in that month":""}, totalling ${inr(tot)}.\n`+e.slice(-8).map(x=>`${x.date}: ${inr(x.amount)} ${x.category||x.note||""}`).join("\n"):"No expenses recorded for that period."}
+ if(/today/.test(q))return`Net saved today (${t}): ${inr(s.today)}.`;
+ if(/report|month/.test(q))return`This month: ${inr(s.month)} net saved. Year so far: ${inr(s.year)}.\nCash ${inr(s.cash)}, gold ${inr(s.gv)}, silver ${inr(s.sv)}. Total ${inr(s.total)}.${GOAL?` Goal progress ${s.progress.toFixed(1)}%.`:""}`;
+ if(/total|worth|how much/.test(q))return`Your total savings are ${inr(s.total)}: cash ${inr(s.cash)}, gold ${inr(s.gv)}, silver ${inr(s.sv)}.`;
+ return"I can answer about gold, silver, cash, total, today, monthly report, expenses (try “November expenses”) and daily saving needed for a goal."}
+function draw(){$("#log").innerHTML=H.map(m=>`<div class="m ${m.r}">${esc(m.t)}<small>${m.at}</small></div>`).join("");$("#log").scrollTop=1e9;save("chat",H.slice(-100))}
+function push(r,t){H.push({r,t,at:new Date().toLocaleString("en-IN")});draw()}
+function chatInit(){draw();if(LANG==="ta"){$("#chips").innerHTML=TAQ.map(q=>`<button type="button">${q}</button>`).join("");return}$("#chips").innerHTML=["How much gold do I own?","How much silver have I saved?","What is my total savings?","How much did I save today?","How much should I save daily to reach ₹1 lakh?","Generate my monthly savings report"].map(q=>`<button type="button">${q}</button>`).join("")}
+$("#chips").onclick=e=>{if(e.target.tagName==="BUTTON"){$("#msg").value=e.target.textContent;$("#cf").requestSubmit()}};
+$("#cf").onsubmit=e=>{e.preventDefault();const q=$("#msg").value;$("#msg").value="";const a=answer(q);push("u",q);push("a",a);say(a)};
+$("#clr").onclick=()=>{H=[];draw()};
+// Language and Tamil assistant
+let LANG=load("lang","en");
+const TAQ=["என்னிடம் எவ்வளவு தங்கம் உள்ளது?","எவ்வளவு வெள்ளி சேமித்துள்ளேன்?","என் மொத்த சேமிப்பு எவ்வளவு?","இன்று எவ்வளவு சேமித்தேன்?","1 லட்சம் அடைய தினமும் எவ்வளவு சேமிக்க வேண்டும்?","மாத சேமிப்பு அறிக்கை"];
+function answer(q){return LANG==="ta"?answerTa(q):answerEn(q)}
+function answerTa(q){const s=sum();q=q.replace(/ஒரு\s*(லட்சம்|கோடி|ஆயிரம்)/,"1 $1");
+ const m=q.match(/([\d.,]+)\s*(லட்சம்|கோடி|ஆயிரம்)?/),num=m?parseFloat(m[1].replace(/,/g,"")):0;
+ if(/நீக்க|அழி|மாற்ற/.test(q))return"என்னால் பதிவுகளை மாற்ற முடியாது. சேர்க்க 'Add' பகுதியையும், நீக்க 'History' பகுதியையும் பயன்படுத்துங்கள்.";
+ if(/தினம்|நாளைக்கு|அடைய|இலக்கு/.test(q)&&num){const n=num*({"லட்சம்":1e5,"கோடி":1e7,"ஆயிரம்":1e3}[m[2]]||1),dm=q.match(/(\d+)\s*(நாள்|நாட்கள்)/),mm=q.match(/(\d+)\s*மாத/),d=dm?+dm[1]:mm?+mm[1]*30:365,left=Math.max(0,n-s.total);
+  return`இலக்கு ${inr(n)}. தற்போதைய மொத்தம் ${inr(s.total)}. மீதம் ${inr(left)}. ${d} நாட்களில் அடைய தினமும் சுமார் ${inr(left/d)} சேமிக்க வேண்டும்.`}
+ if(/தங்கம்/.test(q))return`உங்களிடம் ${+s.gold.toFixed(3)} கிராம் தங்கம் உள்ளது. சமீபத்திய விலையில் மதிப்பு சுமார் ${inr(s.gv)}.`;
+ if(/வெள்ளி/.test(q))return`உங்களிடம் ${+s.silver.toFixed(3)} கிராம் வெள்ளி உள்ளது. சமீபத்திய விலையில் மதிப்பு சுமார் ${inr(s.sv)}.`;
+ if(/செலவு/.test(q)){const mons=["ஜனவரி","பிப்ரவரி","மார்ச்","ஏப்ரல்","மே","ஜூன்","ஜூலை","ஆகஸ்ட்","செப்டம்பர்","அக்டோபர்","நவம்பர்","டிசம்பர்"],mi=mons.findIndex(x=>q.includes(x)),
+  e=TX.filter(x=>x.kind==="expense"&&(mi<0||+x.date.slice(5,7)===mi+1)),tot=e.reduce((a,x)=>a+x.amount,0);
+  return e.length?`${e.length} செலவு பதிவுகள், மொத்தம் ${inr(tot)}.\n`+e.slice(-8).map(x=>`${x.date}: ${inr(x.amount)} ${x.category||x.note||""}`).join("\n"):"அந்த காலத்திற்கு செலவுகள் எதுவும் பதிவாகவில்லை."}
+ if(/இன்று/.test(q))return`இன்று நீங்கள் சேமித்த நிகர தொகை ${inr(s.today)}.`;
+ if(/அறிக்கை|மாத/.test(q))return`இந்த மாதம் நிகர சேமிப்பு ${inr(s.month)}. இந்த ஆண்டு இதுவரை ${inr(s.year)}.\nரொக்கம் ${inr(s.cash)}, தங்கம் ${inr(s.gv)}, வெள்ளி ${inr(s.sv)}. மொத்தம் ${inr(s.total)}.${GOAL?` இலக்கில் ${s.progress.toFixed(1)}% எட்டியுள்ளீர்கள்.`:""}`;
+ if(/மொத்த|சேமிப்பு|மதிப்பு|எவ்வளவு/.test(q))return`உங்கள் மொத்த சேமிப்பு ${inr(s.total)}: ரொக்கம் ${inr(s.cash)}, தங்கம் ${inr(s.gv)}, வெள்ளி ${inr(s.sv)}.`;
+ return"தங்கம், வெள்ளி, மொத்த சேமிப்பு, இன்று, மாத அறிக்கை, செலவுகள் (எ.கா. நவம்பர் செலவுகள்), இலக்கை அடைய தினசரி சேமிப்பு பற்றி கேளுங்கள்."}
+$("#lang").value=LANG;
+$("#lang").onchange=()=>{LANG=$("#lang").value;save("lang",LANG);try{speechSynthesis.cancel()}catch{}$("#msg").placeholder=LANG==="ta"?"உங்கள் சேமிப்பு பற்றி கேளுங்கள்":"Ask about your savings";chatInit()};
+$("#msg").placeholder=LANG==="ta"?"உங்கள் சேமிப்பு பற்றி கேளுங்கள்":"Ask about your savings";
+// Voice: speech in (mic) and speech out (read answers aloud)
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let speakOn=load("speak",true),rec=null;
+function say(t){if(!speakOn||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/₹/g,LANG==="ta"?"ரூபாய் ":"rupees ").replace(/(\d)\s?g\b/g,"$1 grams").replace(/\n/g,". "));u.lang=LANG==="ta"?"ta-IN":"en-IN";speechSynthesis.speak(u)}catch{}}
+function spkUi(){$("#spk").textContent=speakOn?"🔊":"🔇";$("#spk").setAttribute("aria-pressed",speakOn)}
+$("#spk").onclick=()=>{speakOn=!speakOn;save("speak",speakOn);try{speechSynthesis.cancel()}catch{}spkUi()};spkUi();
+if(!SR){$("#mic").classList.add("hide");$("#vst").textContent="Voice input isn’t supported in this browser. Try Chrome on Android or Safari on iPhone, or type your question."}
+$("#mic").onclick=()=>{if(rec){rec.stop();return}
+ rec=new SR();rec.lang=LANG==="ta"?"ta-IN":"en-IN";rec.interimResults=false;rec.maxAlternatives=1;
+ rec.onstart=()=>{$("#mic").textContent="⏹";$("#vst").textContent="Listening… ask your question."};
+ rec.onresult=e=>{$("#msg").value=e.results[0][0].transcript;$("#vst").textContent="";$("#cf").requestSubmit()};
+ rec.onerror=e=>{$("#vst").textContent=e.error==="not-allowed"||e.error==="service-not-allowed"?"Microphone access is blocked. Allow it in your browser settings, then try again.":e.error==="no-speech"?"I didn’t hear anything. Tap the mic and try again.":"Voice input failed. Check your connection or type your question."};
+ rec.onend=()=>{rec=null;$("#mic").textContent="🎤"};
+ try{rec.start()}catch{rec=null}};
+function trendData(n){const t=[...TX].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id),q={gold:0,silver:0,money:0},r={gold:0,silver:0},out=[];let i=0;
+ for(let k=n-1;k>=0;k--){const d=new Date();d.setDate(d.getDate()-k);const ds=d.toISOString().slice(0,10);
+  while(i<t.length&&t[i].date<=ds){const x=t[i++],s=["deposit","income"].includes(x.kind)?1:-1;q[x.asset]+=s*x.amount;if(x.asset!=="money")r[x.asset]=x.rate}
+  out.push([ds,q.money+q.gold*r.gold+q.silver*r.silver])}return out}
+function trendSvg(){if(!TX.length)return"";const d=trendData(30),v=d.map(x=>x[1]),mn=Math.min(...v),mx=Math.max(...v);
+ const W=320,H=130,p=8,sp=mx-mn||1,pts=v.map((y,i)=>[p+i*(W-2*p)/(v.length-1),H-p-(y-mn)/sp*(H-2*p)]),line=pts.map(a=>a.map(n=>n.toFixed(1)).join(",")).join(" ");
+ return`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Total savings over the last 30 days" style="width:100%;height:auto;margin-top:8px"><polygon points="${p},${H-p} ${line} ${W-p},${H-p}" fill="var(--gold)" opacity=".18"/><polyline points="${line}" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round"/></svg><div class="lg" style="justify-content:space-between"><span>${d[0][0].slice(5)}</span><span>Low ${inr(mn)} · High ${inr(mx)}</span><span>${d[d.length-1][0].slice(5)}</span></div>`}
+function monthBars(){const m={},now=new Date();for(let k=5;k>=0;k--){const d=new Date(now.getFullYear(),now.getMonth()-k,1);m[d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")]=0}
+ TX.forEach(x=>{const k=x.date.slice(0,7);if(k in m)m[k]+=(["deposit","income"].includes(x.kind)?1:-1)*x.amount*(x.asset==="money"?1:x.rate)});
+ const e=Object.entries(m),mx=Math.max(...e.map(x=>Math.abs(x[1])),1);
+ return e.map(([k,v])=>`<div style="display:flex;align-items:center;gap:8px;margin:6px 0"><span class="mute" style="width:48px;font-size:.8rem">${k.slice(2)}</span><div style="flex:1;background:#0e1c38;border-radius:6px;height:14px"><i style="display:block;height:100%;border-radius:6px;width:${Math.abs(v)/mx*100}%;background:${v<0?"var(--bad)":"var(--gold)"}"></i></div><span style="width:92px;text-align:right;font-size:.82rem">${inr(v)}</span></div>`).join("")}
+// Chat to add: parses a sentence into an entry and asks for confirmation before saving
+let DR=null,AL=[];
+function abot(t,u,html){AL.push({t,u,html});$("#alog").innerHTML=AL.slice(-12).map(m=>`<div class="m ${m.u?"u":"a"}">${m.html||esc(m.t)}</div>`).join("");$("#alog").scrollTop=1e9}
+function num(s){const m=s.match(/(\d[\d,]*\.?\d*)\s*(lakh|crore|k)?/);return m?parseFloat(m[1].replace(/,/g,""))*({lakh:1e5,crore:1e7,k:1e3}[m[2]]||1):0}
+function parseAdd(q){const d={asset:/gold/.test(q)?"gold":/silver/.test(q)?"silver":"money",amount:0,rate:0,category:"",method:"",note:"",date:today()},metal=d.asset!=="money";
+ d.kind=metal?(/sold|sell|withdr|took/.test(q)?"withdraw":"deposit"):/spent|spend|expense|paid|bought/.test(q)?"expense":/income|earned|salary|received/.test(q)?"income":/withdr|took out/.test(q)?"withdraw":"deposit";
+ if(/yesterday/.test(q)){const y=new Date();y.setDate(y.getDate()-1);d.date=y.toISOString().slice(0,10)}
+ const um=q.match(/\b(upi|cash|card|bank)\b/);if(um)d.method=um[1];
+ if(/coin/.test(q))d.category="coin";else if(/jewel/.test(q))d.category="jewellery";
+ if(metal){const g=q.match(/([\d.]+)\s*(?:g|gm|gms|gram|grams)\b/);d.amount=g?parseFloat(g[1]):0;const r=q.match(/(?:at|@|rate|for)\s*(?:₹|rs\.?)?\s*([\d,]+\.?\d*)/);d.rate=r?parseFloat(r[1].replace(/,/g,"")):0}
+ else d.amount=num(q.replace(/yesterday|today/g,""));
+ return d}
+function desc(d){const v=d.asset==="money"?inr(d.amount):d.amount+" g";return`${d.kind} ${v} ${d.asset}${d.rate?" at "+inr(d.rate)+"/g":""} on ${d.date}${d.category?" ("+d.category+")":""}${d.method?" via "+d.method:""}`}
+function ask(){const d=DR;if(!(d.amount>0)){abot(d.asset==="money"?"How much in ₹?":"How many grams?");return}
+ if(d.asset!=="money"&&!(d.rate>0)){abot("What was the rate per gram in ₹?");return}
+ abot("",false,`${esc(desc(d))}. Save this?<br><button type="button" data-a="yes">Confirm</button> <button type="button" class="ghost" data-a="no">Cancel</button>`)}
+function fin(ok){if(!DR)return;if(ok){TX.push({id:Date.now(),...DR,note:"Added by chat"});save("tx",TX);abot("Saved. Your total is now "+inr(sum().total)+".");dash()}else abot("Cancelled. Nothing was saved.");DR=null}
+$("#alog").onclick=e=>{const a=e.target.dataset.a;if(a)fin(a==="yes")};
+$("#af").onsubmit=e=>{e.preventDefault();const q=$("#ain").value.trim();$("#ain").value="";if(!q)return;abot(q,true);const l=q.toLowerCase();
+ if(DR&&DR.amount>0&&(DR.asset==="money"||DR.rate>0)){if(/^(yes|confirm|ok|save|yeah|y)\b/.test(l))return fin(true);if(/^(no|cancel|stop|n)\b/.test(l))return fin(false)}
+ if(DR&&!(DR.amount>0)){const n=num(l);if(n){DR.amount=n;return ask()}}
+ else if(DR&&DR.asset!=="money"&&!(DR.rate>0)){const n=num(l);if(n){DR.rate=n;return ask()}}
+ if(!/\d/.test(l)){abot("Tell me an amount, for example “saved ₹500 today” or “bought 2 g gold at 7200”.");return}
+ DR=parseAdd(l);ask()};
+$("#amic").onclick=()=>{if(!SR){abot("Voice input isn’t supported in this browser. Please type instead.");return}const r=new SR();r.lang="en-IN";
+ r.onresult=e=>{$("#ain").value=e.results[0][0].transcript;$("#af").requestSubmit()};r.onerror=()=>abot("I couldn’t use the microphone. Allow access in your browser or type instead.");try{r.start()}catch{}};
+abot("Hi! Tell me what you saved and I’ll add it after you confirm.");
+// Install help
+let dp=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e});
+$("#inst").onclick=async()=>{if(dp){dp.prompt();dp=null;return}
+ const ios=/iphone|ipad/i.test(navigator.userAgent);$("#ihelp").classList.remove("hide");
+ $("#ihelp").textContent=ios?"On iPhone: open this page in Safari, tap Share, then Add to Home Screen.":"On Android: open this page in Chrome, tap the ⋮ menu, then Install app or Add to Home screen."};
+$("#date").value=today();$("#asset").onchange();dash();
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script></body></html>
